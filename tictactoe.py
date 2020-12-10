@@ -1,17 +1,13 @@
 # write your code here
+import random
 
 
-def fill_table_from_input(table_state):
+def create_table():
     table = []
-    k = 0
     for i in range(3):
         table.append([])
         for j in range(3):
-            if table_state[k + j] == '_':
-                table[i].append(' ')
-            else:
-                table[i].append(table_state[k + j])
-        k += 3
+            table[i].append(' ')
     return table
 
 
@@ -94,20 +90,36 @@ def get_coordinates(input_coordinates):
         return 'You should enter numbers!'
 
 
-the_table = fill_table_from_input(input('Enter the cells: '))
+def find_free_slot():
+    free_slots = []
+    for i in range(3):
+        for j in range(3):
+            if the_table[i][j] == ' ':
+                free_slots.append((i, j))
+    return free_slots
+
+
+the_table = create_table()
 print_board(the_table)
 
-inp = input('Enter the coordinates: ')
-the_coordinates = get_coordinates(inp)
-while isinstance(the_coordinates, str):
-    print(the_coordinates)
-    inp = input('Enter the coordinates: ')
-    the_coordinates = get_coordinates(inp)
+for i in range(10):
+    if i % 2 == 0:
+        inp = input('Enter the coordinates: ')
+        the_coordinates = get_coordinates(inp)
+        while isinstance(the_coordinates, str):
+            print(the_coordinates)
+            inp = input('Enter the coordinates: ')
+            the_coordinates = get_coordinates(inp)
+        column, row = the_coordinates
+        the_table[3 - row][column - 1] = determine_move(the_table)
+        print_board(the_table)
+    else:
+        the_slots = find_free_slot()
+        the_coordinates = random.choice(the_slots)
+        print('Making move level "easy"')
+        the_table[the_coordinates[0]][the_coordinates[1]] = determine_move(the_table)
+        print_board(the_table)
 
-column, row = the_coordinates
-the_table[3 - row][column - 1] = determine_move(the_table)
-print_board(the_table)
-if evaluate_board(the_table) == 'X wins' or evaluate_board(the_table) == 'O wins' or evaluate_board(the_table) == 'Draw':
-    print(evaluate_board(the_table))
-else:
-    print('Game not finished')
+    if evaluate_board(the_table) == 'X wins' or evaluate_board(the_table) == 'O wins' or evaluate_board(the_table) == 'Draw':
+        print(evaluate_board(the_table))
+        break
